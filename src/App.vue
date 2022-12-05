@@ -4,13 +4,11 @@ import * as TaskService from "./services/TaskService.js";
 
 import TheMenu from "./components/TheMenu.vue";
 import TheTopTask from "./components/TheTopTask.vue";
-import TaskList from "./components/TaskList.vue";
 
 export default {
   components: {
     TheMenu,
     TheTopTask,
-    TaskList,
   },
   data() {
     return {
@@ -105,15 +103,14 @@ export default {
         <TheTopTask ref="TheTopTask" @newTask="addTask($event)" />
       </el-header>
       <el-main>
-        <RouterView></RouterView>
-        <TaskList
+        <RouterView
           :tasks="tasks || []"
           :areTasksLoading="areTasksLoading"
           v-on="{
             restart: sendRestartTask,
             delete: deleteTask,
           }"
-        />
+        ></RouterView>
       </el-main>
     </el-container>
   </el-container>
