@@ -1,8 +1,13 @@
 <template>
+  <el-select v-model="sortBy" class="m-2" placeholder="Trier">
+    <el-option label="La plus récente" value="descending" />
+    <el-option label="La plus ancienne" value="ascending" />
+  </el-select>
   <el-table
     :data="tasks"
-    stripe
+    :row-class-name="checkHighlight"
     row-key="id"
+    @row-click="setHighlight"
     empty-text="Aucune tâche"
     style="width: 100%"
     v-loading="areTasksLoading"
@@ -55,6 +60,9 @@ export default {
         hour: "2-digit",
         minute: "2-digit",
       }),
+      sortBy:
+        this.$route.query.sortBy === "ascending" ? "ascending" : "descending",
+      defaultSortBy: "descending",
     };
   },
   props: {
@@ -70,6 +78,12 @@ export default {
     },
   },
   watch: {
+    sortBy(newVal) {
+      this.$router.push({
+        query: { sortBy: newVal === this.defaultSortBy ? undefined : newVal },
+      });
+      this.sortTable();
+    },
     tasks: {
       deep: true,
       handler() {
@@ -77,6 +91,7 @@ export default {
       },
     },
   },
+  emits: ["restart", "delete"],
   methods: {
     formatTimestamp(ts) {
       return this.tsFormatter.format(ts);
@@ -109,9 +124,17 @@ export default {
       });
     },
     sortTable() {
-      const sortBy =
-        this.$route.query.sortBy === "ascending" ? "ascending" : "descending";
-      this.$refs.table.sort("startTime", sortBy);
+      this.$refs.table.sort("name", this.sortBy);
+    },
+    checkHighlight({ row }) {
+      if (this.$route.params.taskID && row.id === this.$route.params.taskID) {
+        return "highlight-line";
+      } else {
+        return "";
+      }
+    },
+    setHighlight(row) {
+      this.$router.push({ path: "/home/" + row.id });
     },
   },
   mounted() {
@@ -119,3 +142,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.el-select {
+  float: right;
+}
+</style>

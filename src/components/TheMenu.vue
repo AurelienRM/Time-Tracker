@@ -1,5 +1,13 @@
 <template>
-  <el-menu :router="true" :default-active="$route.path">
+  <el-menu
+    :router="true"
+    :default-active="
+      ($route.matched[0] && $route.matched[0].path == '/') ||
+      $route.path == '/home'
+        ? '/'
+        : $route.path
+    "
+  >
     <h3>Vue Tracker</h3>
     <el-menu-item index="/">
       <span>
